@@ -1,0 +1,39 @@
+body{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, p, li, a {
+    margin: 0;
+}
+
+:root{
+    --orange: #D75413;
+    --mediumorange: #d7541387;
+    --lightorange: #F9F2F2;
+}
+
+input{
+    background-color: var(--mediumorange);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding-left: 15px;
+    letter-spacing: 2px;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: var(--lightorange);
+  }
+
+button{
+    background-color: var(--orange);
+    color: white;
+    border-radius: 20px;
+    border: none;
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 18px;
+}
