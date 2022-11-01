@@ -38,3 +38,44 @@ button{
     font-size: 18px;
     cursor: pointer;
 }
+
+.message{
+    margin: 20px;
+    width: 80%;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.message.interviewer{
+    background-color: #f18c59;
+    position: relative;
+}
+
+.message.interviewer::before{
+    content: '';
+    width: 0; 
+    height: 0; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent; 
+    border-right: 10px solid #f18c59; 
+    position: absolute;
+    left: -10px;    top: 20px;
+}
+
+.message.candidate{
+    background-color: #f5c3ac;
+    float: right;
+    position: relative;
+}
+
+.message.candidate::after{
+    content: '';
+    width: 0; 
+    height: 0; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #f5c3ac;
+    position: absolute;
+    right: -10px;
+    top: 20px;
+}

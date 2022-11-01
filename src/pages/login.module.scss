@@ -72,6 +72,7 @@
 .buttonsLoginForm{
     width: 415px;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     @media (max-width: 890px) {
         width: calc(90% + 15px);
@@ -83,10 +84,12 @@
     color: var(--orange);
     text-decoration: underline;
     padding: 10px 20px; 
+    margin-top: 20px;
 }
 
 .buttonLogin{
     padding: 10px 20px; 
+    height: 60px;
 
     @media (max-width: 890px) {
         height: 60px;
