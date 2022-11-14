@@ -9,7 +9,6 @@ Essas instruções permitirão que você obtenha uma cópia do projeto em opera�
 #
 ### 🔧 Instalação
 
-Uma série de exemplos passo-a-passo que informam o que você deve executar para ter um ambiente de desenvolvimento em execução.
 
 Clone o repositório:
 
@@ -34,7 +33,6 @@ npm run dev
 #
 ## 🛠️ Construído com
 
-Mencione as ferramentas que você usou para criar seu projeto
 
 * [React](https://reactjs.org/) - Biblioteca
 * [NextJS](https://nextjs.org/) - Framework
@@ -49,7 +47,6 @@ Mencione as ferramentas que você usou para criar seu projeto
 #
 ## ✒️ Autores
 
-Mencione todos aqueles que ajudaram a levantar o projeto desde o seu início
 
 * **Carine Estevão** - *Product Owner* - [LinkedIn](https://www.linkedin.com/in/cariinee/)
 * **Guilherme Tavano** - *Desenvolvedor* - [LinkedIn](https://www.linkedin.com/in/guitavano/)
