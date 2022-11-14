@@ -1,0 +1,91 @@
+.editPageContainer{
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+
+    div{
+        border-radius: 20px;
+    }
+
+    @media (max-width: 890px) {
+        margin-top: 50px;
+    }
+}
+
+.editInfoBlock{
+    background-color: #F9F2F2;
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    position: relative;
+    padding: 20px 0;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid #D75413;
+
+    @media (max-width: 890px) {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-bottom: 50px;
+    }
+}
+
+.imageContainer{
+    background-color: grey;
+    width: 200px;
+    height: 200px;
+    margin: 40px;
+}
+
+.profileImageContainer{
+    background-color: grey;
+    width: 200px;
+    height: 200px;
+    margin: 40px;
+}
+
+.infoContainer{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    > div{
+        padding-bottom: 30px;
+    }
+
+    h3{
+        color: var(--orange);
+    }
+
+    input{
+        height: 40px;
+        border-radius: 5px;
+        margin-top: 5px;
+        width: 300px;
+
+        @media (max-width: 890px) {
+            width: calc(100% - 15px);
+        }
+    }
+
+    span{
+        color: gray;
+    }
+
+    @media (max-width: 890px) {
+        width: 100%;
+        margin: 0 20px;
+    }
+}
+
+.editButton{
+    float: right;
+    bottom: 15px;
+    right: 15px;
+    position: absolute;
+    padding: 5px 10px;
+}

@@ -8,6 +8,8 @@ import { useUser } from '@auth0/nextjs-auth0';
 
 import styles from './profile.module.scss'
 
+import myPerson from './../../../public/person.png'
+
 export default function Profile(){
 
     const { user, error, isLoading } = useUser()
@@ -24,7 +26,7 @@ export default function Profile(){
                 
                 <div className={styles.infoBlock}>
                     <div className={styles.profileImageContainer}>
-
+                        <Image src={myPerson}></Image>
                     </div>
                     <div className={styles.devInfo}>
                         <h1>{ user?.name }</h1>
@@ -37,19 +39,13 @@ export default function Profile(){
                         </button>
                     </Link>
 
-                    <Link href='/edit'>
+                    <Link href={"/edit"}>
                         <button className={styles.editButton}>
                             Editar
                         </button>
                     </Link>
                 </div>
                 <div className={styles.featureBlock}>
-                    <Link href='/curriculum'>
-                        <div className={styles.curriculumBlock}>
-                            <Image src={Curriculum}></Image>
-                            <button>Gerador de Currículo</button>
-                        </div>
-                    </Link>
                     <Link href='/interview'>
                         <div className={styles.interviewBlock}>
                             <Image src={Curriculum}></Image>

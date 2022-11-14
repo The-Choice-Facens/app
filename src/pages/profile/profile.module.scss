@@ -20,11 +20,21 @@
     display: flex;
     align-items: center;
 
+    border: 1px solid #D75413;
+
     @media (max-width: 890px) {
         flex-wrap: wrap;
         height: 400px;
         justify-content: center;
         padding-bottom: 50px;
+
+        h1{
+            font-size: 22px;
+        }
+        
+        h2{
+            font-size: 18px;
+        }
     }
 }
 
@@ -40,56 +50,24 @@
     }
 }
 
-.curriculumBlock{
-    display: flex;
-    justify-content: center;
-    background-color: #C4E3FF;
-    height: 400px;
-    width: 48%;
-    cursor: pointer;
-    
-    &:hover{
-        box-shadow: 0px 0px 5px 0px rgb(0 0 0 / 30%);
-    }
-
-    button{
-        background-color: #70B7F8;
-        padding: 10px 20px;
-    }
-
-    @media (max-width: 890px) {
-        width: 100%;
-        height: 170px;
-        align-items: center;
-        justify-content: space-around;
-
-        img{
-            max-width: 120px !important;
-        }
-
-        button{
-            height: 60px;
-            margin: 10px;
-        }
-    }
-
-}
 
 .interviewBlock{
     display: flex;
     justify-content: center;
-    background-color: #D0FFDA;
+    background-color: #485fca;
     height: 400px;
     width: 48%;
     cursor: pointer;
+    border: 1px solid #485fca;
 
     &:hover{
         box-shadow: 0px 0px 5px 0px rgb(0 0 0 / 30%);
     }
 
     button{
-        background-color: #39DD5D;
+        background-color: #485fca;
         padding: 10px 20px;   
+        border-radius: 15px;
     }
 
     @media (max-width: 890px) {
