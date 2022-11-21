@@ -36,9 +36,11 @@ export default function Interview() {
     function handleChange(e){
 
         console.log(e.target.id)
+        console.log(selectedTechs)
 
-        if(selectedTechs.includes({'id': e.target.id, 'name': e.target.value})){
-            setSelectedTechs(selectedTechs.filter(tech => tech != {'id': e.target.id, 'name': e.target.value}))
+        if(selectedTechs.filter(tech => tech.id == e.target.id).length > 0){
+            console.log("includes")
+            setSelectedTechs(selectedTechs.filter(tech => tech.id != e.target.id))
         }else{
             setSelectedTechs([...selectedTechs, {'id': e.target.id, 'name': e.target.value}])
         }
