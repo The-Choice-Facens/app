@@ -52,6 +52,7 @@ button{
 .message.interviewer{
     background-color: #f18c59;
     position: relative;
+    cursor: pointer;
 }
 
 .message.interviewer::before{

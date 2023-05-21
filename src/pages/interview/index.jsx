@@ -11,118 +11,92 @@ import SendButton from './../../../public/sendButton.svg'
 
 import { useUser } from '@auth0/nextjs-auth0';
 
+import { supabase } from '../../../supabase'
+
 export default function Interview() {
 
     const [techs, setTechs] = useState([])
-    const [selectedTechs, setSelectedTechs] = useState([])
+    const [selectedTech, setSelectedTech] = useState("")
     const [interviewTime, setInterviewTime] = useState(false)
     const [messages, setMessages] = useState([])
     const [valueInputed, setValueInputed] = useState("")
     const [questionsToDo, setQuestionsToDo] = useState([])
+    const [result, setResult] = useState(0)
 
     const { user, error, isLoading } = useUser()
     
-
     useEffect(() => {
-    
-        fetch('https://uleaqepl.directus.app/items/techs')
-        .then(result => result.json())
-        .then(data => {
-            setTechs(data.data)
-        })
-
-    },[])
-
-    function handleChange(e){
-
-        console.log(e.target.id)
-        console.log(selectedTechs)
-
-        if(selectedTechs.filter(tech => tech.id == e.target.id).length > 0){
-            console.log("includes")
-            setSelectedTechs(selectedTechs.filter(tech => tech.id != e.target.id))
-        }else{
-            setSelectedTechs([...selectedTechs, {'id': e.target.id, 'name': e.target.value}])
-        }
+        getTechs();
+    }, []);
+  
+    async function getTechs() {
+        const { data } = await supabase.from("techs").select('*');
+        setTechs(data);
     }
 
-    function doInterview(){
+    async function doInterview(){
         setInterviewTime(true)
-        
-        fetch('https://uleaqepl.directus.app/items/questions')
-        .then(result => result.json())
-        .then(data => {
-            
-            selectedTechs.forEach(selectedTech => {
-                data.data.forEach(question => {
-                    if(selectedTech.id == question.tech){
+        const tech = techs.filter(tech => tech.name == selectedTech)
+        const { data } = await supabase.from("questions").select('*').eq('tech', tech[0].id);
 
-                        setQuestionsToDo(questionsToDo => [...questionsToDo,
-                            {
-                                'id': question.id,
-                                'question': question.question,
-                                'tech': {
-                                    'name': selectedTech.name,
-                                    'id': selectedTech.id
-                                },
-                                'hasOptions': question.wrong_answer_1 ? true : false,
-                                'options': {
-                                    'right': question.right_answer_4,
-                                    'wrong1': question.wrong_answer_1,
-                                    'wrong2': question.wrong_answer_2,
-                                    'wrong3': question.wrong_answer_3,
-                                },
-                                'answer': question.answer,
-                                'alreadyDone': false
-                            }
-                        ])
+        data.forEach(question => {
 
-                    }
-                })
-            })
-
-            setInterviewTime(true)
-            setMessages([
+            setQuestionsToDo(questionsToDo => [...questionsToDo,
                 {
-                    'interviewer': true,
-                    'message': `Olá ${user.name}, bem vindo \r\n a sua entrevista`,
-                    'type': 'conversation'
-                },
-                {
-                    'interviewer': true,
-                    'message': `A vaga busca pessoas com Skills em: ${selectedTechs.map(tech => tech.name).join(', ')}. Por isso vamos te fazer algumas perguntas técnicas também.`,
-                    'type': 'conversation'
-                },
-                {
-                    'interviewer': true,
-                    'message': `Mas primeiro, me conta um pouco sobre você.`,
-                    'type': 'conversation'
+                    'id': question.id,
+                    'question': question.question,
+                    'tech': {
+                        'name': selectedTech,
+                        'id': question.id
+                    },
+                    'options': {
+                        'right': question.right,
+                        'wrong1': question.wrong1,
+                        'wrong2': question.wrong2,
+                        'wrong3': question.wrong3,
+                    },
+                    'alreadyDone': false
                 }
-                ])
+            ])
+
         })
+
+        setInterviewTime(true)
+        setMessages([
+            {
+                'interviewer': true,
+                'message': `Olá ${user.name}, bem vindo \r\n a sua entrevista`,
+                'type': 'conversation'
+            },
+            {
+                'interviewer': true,
+                'message': `A vaga busca pessoas com Skills em: ${selectedTech}. Por isso vamos te fazer algumas perguntas técnicas também.`,
+                'type': 'conversation'
+            },
+            {
+                'interviewer': true,
+                'message': `Mas primeiro, me conta um pouco sobre você.`,
+                'type': 'conversation'
+            }
+        ])
+
     }
 
-    function sendMessage(){
-
+    function sendMessage(input){
+        
 
         setMessages(messages => [
             ...messages,
             {
                 'interviewer': false,
-                'message': valueInputed,
+                'message': input ? input : valueInputed,
                 'type': 'candidate'
-            }
-        ])
-        setMessages(messages => [
-            ...messages,
-            {
+            },{
                 'interviewer': true,
                 'message': "...",
                 'type': 'waiting'
             }
         ])
-
-        setValueInputed("")
 
         setTimeout(function(){
             document.querySelector(".messageContainer").scrollTo({
@@ -137,19 +111,22 @@ export default function Interview() {
                 let newMessage = messages.slice(0, messages.length - 1)
                 return newMessage
             })
-            verifyStatusOfConversation()
+            verifyStatusOfConversation(input ? input : valueInputed)
+            setValueInputed("")
         }, 2000)
         
     }
 
-    function verifyStatusOfConversation(){
+    function verifyStatusOfConversation(inputedMessage){
         let interviewerMessages = messages.filter(message => message.interviewer == true)
 
         let lastMessage = interviewerMessages[interviewerMessages.length - 1]
+        let lastCandidateMessage = inputedMessage
+
+        const questionMessages = jsonOfAQuestion(questionsToDo[0])
 
         if(interviewerMessages.length == 3){
-
-            setMessages(messages => [
+             setMessages(messages => [
                 ...messages,
                 {
                     'interviewer': true,
@@ -160,160 +137,73 @@ export default function Interview() {
                     'interviewer': true,
                     'message': 'Também é bem interessante você falar como se interessou por tecnologia!',
                     'type': 'conversation'
-                }
+                },
+                ...questionMessages
             ])
-
-            if(questionsToDo[0].hasOptions){
-                setMessages(messages =>[
-                    ...messages,
-                    {
-                        'interviewer': true,
-                        'message': `Vamos para a parte Técnica? A primeira pergunta é sobre ${questionsToDo[0].tech.name}. ${questionsToDo[0].question}`,
-                        'type': 'question',
-                        'questionId': questionsToDo[0].id
-                    },
-                    {
-                        'interviewer': true,
-                        'message': `A - ${questionsToDo[0].options.right}`,
-                        'type': 'question-option',
-                        'questionId': questionsToDo[0].id
-                    }
-                    ,
-                    {
-                        'interviewer': true,
-                        'message': `B - ${questionsToDo[0].options.wrong1}`,
-                        'type': 'question-option',
-                        'questionId': questionsToDo[0].id
-                    }
-                    ,
-                    {
-                        'interviewer': true,
-                        'message': `C - ${questionsToDo[0].options.wrong2}`,
-                        'type': 'question-option',
-                        'questionId': questionsToDo[0].id
-                    }
-                    ,
-                    {
-                        'interviewer': true,
-                        'message': `D - ${questionsToDo[0].options.wrong3}`,
-                        'type': 'question-option',
-                        'questionId': questionsToDo[0].id
-                    }
-                ])
-            }else{
-                setMessages(messages =>[
-                    ...messages,
-                    {
-                        'interviewer': true,
-                        'message': `Vamos para a parte Técnica? A primeira pergunta é sobre ${questionsToDo[0].tech.name}. ${questionsToDo[0].question}`,
-                        'type': 'question',
-                        'questionId': questionsToDo[0].id
-                    }
-                ])
-            }
-
             setAlreadyDone(questionsToDo[0].id)
+        }
 
-        }else if(lastMessage.type == 'question' || lastMessage.type == 'question-option'){
+        if(lastMessage.type == 'question' || lastMessage.type == 'question-option'){
 
             let pastQuestion = questionsToDo.filter(question => question.id == lastMessage.questionId)
 
             let nextQuestion = questionsToDo.filter(question => question.alreadyDone == false)
 
-            if(nextQuestion.length != 0){
-                setAlreadyDone(nextQuestion[0].id)
+            console.log(pastQuestion[0].options.right)
+            console.log(lastCandidateMessage)
+            let correct = lastCandidateMessage.includes(pastQuestion[0].options.right)
 
-                if(nextQuestion[0].hasOptions){
-                    setMessages(messages =>[
-                        ...messages,
-                        {
-                            'interviewer': true,
-                            'message': `${pastQuestion[0].answer ? 
-                            "Obrigado! Uma resposta boa também seria essa:" :
-                            "A resposta correta é:"}`,
-                            'type': 'conversation'
-                        },
-                        {
-                            'interviewer': true,
-                            'message': `${pastQuestion[0].answer ? pastQuestion[0].answer : pastQuestion[0].options.right}`,
-                            'type': 'answer'
-                        },
-                        {
-                            'interviewer': true,
-                            'message': `Próxima pergunta: ${nextQuestion[0].question}`,
-                            'type': 'question',
-                            'questionId': nextQuestion[0].id
-                        },
-                        {
-                            'interviewer': true,
-                            'message': `A - ${nextQuestion[0].options.right}`,
-                            'type': 'question-option',
-                            'questionId': nextQuestion[0].id
-                        }
-                        ,
-                        {
-                            'interviewer': true,
-                            'message': `B - ${nextQuestion[0].options.wrong1}`,
-                            'type': 'question-option',
-                            'questionId': nextQuestion[0].id
-                        }
-                        ,
-                        {
-                            'interviewer': true,
-                            'message': `C - ${nextQuestion[0].options.wrong2}`,
-                            'type': 'question-option',
-                            'questionId': nextQuestion[0].id
-                        }
-                        ,
-                        {
-                            'interviewer': true,
-                            'message': `D - ${nextQuestion[0].options.wrong3}`,
-                            'type': 'question-option',
-                            'questionId': nextQuestion[0].id
-                        }
-                    ])
-                }else{
-                    setMessages(messages => [
-                        ...messages,
-                        {
-                            'interviewer': true,
-                            'message': 'Obrigado! Uma resposta boa também seria essa:',
-                            'type': 'conversation'
-                        },
-                        {
-                            'interviewer': true,
-                            'message': `${pastQuestion[0].answer ? pastQuestion[0].answer : pastQuestion[0].options.right}`,
-                            'type': 'answer'
-                        },
-                        {
-                            'interviewer': true,
-                            'message': `Próxima pergunta: ${nextQuestion[0].question}`,
-                            'type': 'question',
-                            'questionId': nextQuestion[0].id
-                        }
-                    ])
-                }
+            if(correct){
+                setResult((r) => r + 1)
+            }
 
-            }else{
+            if(nextQuestion.length == 0){
                 setMessages(messages => [
                     ...messages,
                     {
                         'interviewer': true,
-                        'message': 'Obrigado! Uma resposta boa também seria essa:',
+                        'message': `${correct ? "Parabéns, a resposta correta é:" : "A resposta correta é:"}`,
                         'type': 'conversation'
                     },
                     {
                         'interviewer': true,
-                        'message': `${pastQuestion[0].answer ? pastQuestion[0].answer : pastQuestion[0].options.right}`,
+                        'message': `${pastQuestion[0].options.right}`,
                         'type': 'answer'
                     },
                     {
                         'interviewer': true,
                         'message': `Obrigado por participar da entrevista!`,
                         'type': 'conversation',
+                    },
+                    {
+                        'interviewer': true,
+                        'message': `Sua nota foi: ${result}/10`,
+                        'type': 'conversation',
                     }
                 ])
+            }else{
+
+                setAlreadyDone(nextQuestion[0].id)
+
+                const questionMessages = jsonOfAQuestion(nextQuestion[0])
+
+                setMessages(messages =>[
+                    ...messages,
+                    {
+                        'interviewer': true,
+                        'message': `${correct ? "Parabéns, a resposta correta é:" : "A resposta correta é:"}`,
+                        'type': 'conversation'
+                    },
+                    {
+                        'interviewer': true,
+                        'message': `${pastQuestion[0].options.right}`,
+                        'type': 'answer'
+                    },
+                    ...questionMessages
+                ])
+
             }
+
         }
 
         setTimeout(function(){
@@ -327,6 +217,30 @@ export default function Interview() {
 
     }
 
+    function jsonOfAQuestion(question){
+        const answers = shuffleArray([question.options.right, question.options.wrong1, question.options.wrong2, question.options.wrong3])
+        const letters = ["A", "B", "C", "D"]
+
+        const questions = answers.map((answer, idx) => {
+            return {
+                'interviewer': true,
+                'message': `${letters[idx]} - ${answer}`,
+                'type': 'question-option',
+                'questionId': question.id
+            }
+        })
+
+        return [
+            {
+                'interviewer': true,
+                'message': `Pergunta: ${question.question}`,
+                'type': 'question',
+                'questionId': question.id
+            },
+            ...questions
+        ]
+    }
+
     function setAlreadyDone(id){
         setQuestionsToDo(questionsToDo => {
             return questionsToDo.map((question, idx) => {
@@ -337,6 +251,14 @@ export default function Interview() {
             })
         })
     }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
 
     if(interviewTime){
         return(
@@ -352,7 +274,15 @@ export default function Interview() {
                             messages && messages.map((message, idx) => {
                                 return(
                                     <p key={idx} 
-                                    className={ `message ${message.interviewer ? 'interviewer' : 'candidate'} ${message.type == 'question-option' ? 'option' : ''} ${message.type == 'answer' ? 'answer' : ''}`}>
+                                    className={ `message ${message.interviewer ? 'interviewer' : 'candidate'} ${message.type == 'question-option' ? 'option' : ''} ${message.type == 'answer' ? 'answer' : ''}`}
+                                    onClick={() => {
+                                        if(message.type == 'question-option'){
+
+                                            sendMessage(message.message);
+
+                                        }
+                                    }}
+                                    >
                                         {message.message}
                                     </p>
                                 )
@@ -364,9 +294,10 @@ export default function Interview() {
                         <input value={valueInputed} 
                         onChange={(e) => {setValueInputed(e.target.value)}} 
                         type="text"
-                        onKeyUp={(e) => e.key === "Enter" ? sendMessage() : null}
+                        onKeyUp={(e) => e.key === "Enter" ? sendMessage(null) : null}
+                        id="input-user"
                         ></input>
-                        <button onClick={sendMessage}>
+                        <button onClick={() => sendMessage(null)}>
                             <Image src={SendButton} width="50" height="50"></Image>
                         </button>
                     </div>
@@ -393,10 +324,11 @@ export default function Interview() {
                                         return(
                                             <label className={styles.techContent} key={tech.name}>
                                                     <input 
-                                                    type='checkbox' 
+                                                    type='radio' 
                                                     id={tech.id} 
                                                     value={tech.name} 
-                                                    onChange={(e) => handleChange(e)}></input>
+                                                    name="techs"
+                                                    onChange={(e) => setSelectedTech(e.target.value)}></input>
                                                     <span className={styles.checkmark}></span>
                                                     <li>{tech.name}</li>
                                             </label>
