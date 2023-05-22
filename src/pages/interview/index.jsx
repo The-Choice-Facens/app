@@ -22,12 +22,24 @@ export default function Interview() {
     const [valueInputed, setValueInputed] = useState("")
     const [questionsToDo, setQuestionsToDo] = useState([])
     const [result, setResult] = useState(0)
+    const [candidate, setCandidate] = useState()
 
     const { user, error, isLoading } = useUser()
     
     useEffect(() => {
         getTechs();
     }, []);
+
+    useEffect(() => {
+        getCandidate();
+    }, [user])
+
+    async function getCandidate(){
+        if(user){
+            const { data } = await supabase.from("candidates").select("*").eq("email", user.email)
+            setCandidate(data[0])
+        }
+    }
   
     async function getTechs() {
         const { data } = await supabase.from("techs").select('*');
@@ -117,7 +129,7 @@ export default function Interview() {
         
     }
 
-    function verifyStatusOfConversation(inputedMessage){
+    async function verifyStatusOfConversation(inputedMessage){
         let interviewerMessages = messages.filter(message => message.interviewer == true)
 
         let lastMessage = interviewerMessages[interviewerMessages.length - 1]
@@ -177,10 +189,22 @@ export default function Interview() {
                     },
                     {
                         'interviewer': true,
-                        'message': `Sua nota foi: ${result}/10`,
+                        'message': `Sua nota foi: ${correct ? result + 1 : result}/10`,
                         'type': 'conversation',
                     }
                 ])
+
+                const tech = techs.filter(tech => tech.name == selectedTech)
+                const { data, error } = await supabase
+                .from('interviews')
+                .insert([
+                { 
+                    'candidate': candidate.id, 
+                    'result': correct ? result + 1 : result,
+                    'tech': tech[0].id },
+                ])
+
+
             }else{
 
                 setAlreadyDone(nextQuestion[0].id)
@@ -301,8 +325,6 @@ export default function Interview() {
                             <Image src={SendButton} width="50" height="50"></Image>
                         </button>
                     </div>
-
-                    
                 </div>
             </>
         )

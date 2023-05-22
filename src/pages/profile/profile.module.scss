@@ -60,7 +60,7 @@
     display: flex;
     justify-content: center;
     background-color: #485fca;
-    height: 400px;
+    height: 150px;
     width: 48%;
     cursor: pointer;
     border: 1px solid #485fca;
@@ -97,7 +97,7 @@
     display: flex;
     justify-content: center;
     background-color: #485fca;
-    height: 400px;
+    height: 150px;
     width: 48%;
     cursor: pointer;
     border: 1px solid #485fca;
@@ -147,6 +147,7 @@
     right: 15px;
     position: absolute;
     padding: 5px 10px;
+    border-radius: 10px;
 }
 
 .editButton::after {

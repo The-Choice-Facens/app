@@ -76,14 +76,12 @@ export default function Profile(){
                 <div className={styles.featureBlock}>
                     <Link href='/interview'>
                         <div className={styles.interviewBlock}>
-                            <Image src={Curriculum}></Image>
                             <button>Simulador de entrevistas</button>
                         </div>
                     </Link>
                     {
                     isCompany && <Link href='/candidates'>
                             <div className={styles.candidateBlock}>
-                                <Image src={Curriculum}></Image>
                                 <button>Lista de Candidatos</button>
                             </div>
                     </Link>

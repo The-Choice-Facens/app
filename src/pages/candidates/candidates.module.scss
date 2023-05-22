@@ -8,5 +8,31 @@
     padding: 40px;
     margin: auto;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.cardList{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cardCandidate{
+    width: 600px;
+    height: 100px;
+    background-color: white;
+    border-radius: 20px;
+    color: var(--orange);
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+
+    img{
+        width: 80px;
+        border-radius: 10px;
+    }
 }
