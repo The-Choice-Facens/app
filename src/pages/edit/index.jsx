@@ -10,6 +10,8 @@ import { useUser } from '@auth0/nextjs-auth0';
 import BackButton from '../components/backButton'
 import { useEffect, useState } from 'react';
 
+import { supabase } from '../../../supabase'
+
 
 export default function Edit(){
 
@@ -20,41 +22,35 @@ export default function Edit(){
     const [refresh, setRefresh] = useState(true)
 
     useEffect(() =>{
-        if(user){
-            fetch('/api/edit/' + user?.email)
-            .then(response => response.json())
-            .then(data => setUserData(data.data))
-        }
+        getInfos()
     },[user, refresh])
 
-    function saveEdit(){
+    async function getInfos(){
+        if(user){
+            const { data } = await supabase.from("candidates").select('*').eq("email", user.email);
+            console.log(data[0])
+            setUserData(data[0])
+        }
+    }
+
+    async function saveEdit(){
         
-        let data = {
-            'id': user.email,
-            'name': document.querySelector("#name").value == "" ? userData.name : document.querySelector("#name").value,
+        let dataInfo = {
+            'nome': document.querySelector("#name").value == "" ? userData.name : document.querySelector("#name").value,
             'job': document.querySelector("#job").value == "" ? userData.job : document.querySelector("#job").value,
-            'description': document.querySelector("#description").value == "" ? userData.description : document.querySelector("#description").value,
+            'descricao': document.querySelector("#description").value == "" ? userData.description : document.querySelector("#description").value,
             'linkedin': document.querySelector("#linkedin").value == "" ? userData.linkedin : document.querySelector("#linkedin").value,
-            'cellphone': document.querySelector("#cellphone").value == "" ? userData.cellphone : document.querySelector("#cellphone").value,
+            'celular': document.querySelector("#cellphone").value == "" ? userData.cellphone : document.querySelector("#cellphone").value,
         }
+        
+        const { data, error } = await supabase
+        .from('candidates')
+        .update(dataInfo)
+        .eq('email', user.email)
 
-        console.log(data)
-
-        const options = {
-            'method': 'POST',
-            'body': JSON.stringify(data),
-            'headers': {
-                'Content-Type': 'application/json'
-            },
-        }
-
-        fetch('/api/edit/' + user?.email, options)
-        .then(response => response.json())
-        .then(data => {
-            setRefresh({...refresh})
-            clearInputs()
-        })
-
+        setRefresh({...refresh})
+        clearInputs()
+        
     }
 
     function clearInputs(){
@@ -79,23 +75,23 @@ export default function Edit(){
             <div className={styles.editInfoBlock}>
 
                 <div className={styles.imageContainer}>
-                    <Image src={myPerson}></Image>
+                    <img src={userData?.image} alt="" />
                 </div>
 
                 <div className={styles.infoContainer}>
                     <div>
                         <h3>Nome</h3>
-                        <h2>{userData?.name ? userData?.name : user?.name}</h2>
+                        <h2>{userData?.nome ? userData?.nome : user?.nome}</h2>
                         <input type="text" id='name' placeholder='Digite aqui'/>
                     </div>
                     <div>
                         <h3>Descrição</h3>
-                        <h2>{userData?.description ? userData?.description : <span>Não definido</span>}</h2>
+                        <h2>{userData?.descricao ? userData?.descricao : <span>Não definido</span>}</h2>
                         <input type="text" id="description"  placeholder='Digite aqui'/>
                     </div>
                     <div>
                         <h3>Celular</h3>
-                        <h2>{userData?.cellphone ? userData?.cellphone : <span>Não definido</span>}</h2>
+                        <h2>{userData?.celular ? userData?.celular : <span>Não definido</span>}</h2>
                         <input type="tel" id="cellphone"  placeholder='Digite aqui'/>
                     </div>
                     <div>

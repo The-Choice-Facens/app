@@ -8,13 +8,41 @@ import { useUser } from '@auth0/nextjs-auth0';
 
 import styles from './profile.module.scss'
 
+import { useEffect, useState } from 'react';
+
 import myPerson from './../../../public/person.png'
+
+import { supabase } from '../../../supabase'
 
 export default function Profile(){
 
     const { user, error, isLoading } = useUser()
 
-    console.log(user)
+    const [userData, setUserData] = useState()
+
+    const [isCompany, setIsCompany] = useState(false)
+
+    useEffect(() =>{
+        getInfos()
+        verifyCompany()
+    },[user])
+
+    async function getInfos(){
+        if(user){
+            const { data } = await supabase.from("candidates").select('*').eq("email", user.email);
+            setUserData(data[0])
+        }
+    }
+
+    async function verifyCompany(){
+        if(user){
+            const { data } = await supabase.from("companies").select('*').eq("email", user.email);
+            if(data){
+                setIsCompany(true)
+            }
+        }
+    }
+
 
     return(
         <>
@@ -26,7 +54,7 @@ export default function Profile(){
                 
                 <div className={styles.infoBlock}>
                     <div className={styles.profileImageContainer}>
-                        <Image src={myPerson}></Image>
+                        <img src={userData?.image} alt="" />
                     </div>
                     <div className={styles.devInfo}>
                         <h1>{ user?.name }</h1>
@@ -52,8 +80,15 @@ export default function Profile(){
                             <button>Simulador de entrevistas</button>
                         </div>
                     </Link>
+                    {
+                    isCompany && <Link href='/candidates'>
+                            <div className={styles.candidateBlock}>
+                                <Image src={Curriculum}></Image>
+                                <button>Lista de Candidatos</button>
+                            </div>
+                    </Link>
+                    }
                 </div>
-                
             </div>
         </div>
         </>

@@ -6,7 +6,7 @@ import Router from 'next/router'
 
 import { useUser } from '@auth0/nextjs-auth0';
 
-import myLogo from './../../public/logo.png'
+import myLogo from './../../public/logo_interview.png'
 
 import styles from './login.module.scss'
 

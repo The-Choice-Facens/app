@@ -1,7 +1,7 @@
 body{
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #D75413;
+    background-color: #141E39;
 }
 
 h1, h2, h3, h4, p, li, a {
@@ -9,9 +9,9 @@ h1, h2, h3, h4, p, li, a {
 }
 
 :root{
-    --orange: #D75413;
+    --orange: #141E39;
     --mediumorange: #d7541387;
-    --lightorange: #F9F2F2;
+    --lightorange: white;
 }
 
 input{
@@ -50,7 +50,7 @@ button{
 }
 
 .message.interviewer{
-    background-color: #f18c59;
+    background-color: #314b9a6f;
     position: relative;
     cursor: pointer;
 }
@@ -61,14 +61,14 @@ button{
     height: 0; 
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent; 
-    border-right: 10px solid #f18c59; 
+    border-right: 10px solid #314b9a6f; 
     position: absolute;
     left: -9px;    
     top: 20px;
 }
 
 .message.candidate{
-    background-color: #f5c3ac;
+    background-color: #314b9a41;
     align-self: flex-end;
     position: relative;
 }
@@ -79,7 +79,7 @@ button{
     height: 0; 
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
-    border-left: 10px solid #f5c3ac;
+    border-left: 10px solid #314b9a41;
     position: absolute;
     right: -9px;
     top: 20px;

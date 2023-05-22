@@ -77,10 +77,6 @@
     margin: 30px 30px;
     cursor: pointer;
 
-    input ~ .checkmark {
-        border: none;
-    }    
-
     &:hover input ~ .checkmark {
         background-color: #ccc;
     }
@@ -103,6 +99,7 @@
     left: 0;
     height: 25px;
     width: 25px;
+    border: 1px solid var(--orange);
     background-color: white;
     border-radius: 50%;
     cursor: pointer;
@@ -124,7 +121,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
-    border: 2px solid #D75413;
+    border: 2px solid #141E39;
 
     @media (max-width: 890px) {
         border: none;
